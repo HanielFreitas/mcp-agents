@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from fastmcp import FastMCP
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from crewai import Agent, Task, Crew, Process
 from crewai.memory import EntityMemory
 from crewai.memory.storage.rag_storage import RAGStorage
@@ -43,7 +43,11 @@ async def multi_analyst_tool(question: str, user_id: str) -> str:
         mcp_adapters = [yfinance_adapter, supabase_adapter]
 
         tools = yfinance_adapter.tools + supabase_adapter.tools
-        llm = ChatOpenAI(model="gpt-4.1-mini")
+        llm = ChatGroq(
+            model="mixtral-8x7b-32768",  # Ou llama3-70b, etc., dependendo do que quer usar
+            temperature=0.7,
+            groq_api_key=os.getenv("GROQ_API_KEY")
+        )
         memory = get_user_memory(user_id)
 
         multi_analyst = Agent(
